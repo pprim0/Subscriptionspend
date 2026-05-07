@@ -35,3 +35,8 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # database
 *.db
+
+# local assistant/dev environment files
+.envrc
+AGENTS.md
+CLAUDE.md
