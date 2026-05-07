@@ -1,0 +1,22 @@
+{
+  "name": "@subscriptionspend/api",
+  "scripts": {
+    "dev": "node --env-file=../../.env ../../node_modules/tsx/dist/cli.mjs watch src/index.ts",
+    "start": "node --env-file=../../.env ../../node_modules/tsx/dist/cli.mjs src/index.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.0.1",
+    "@orpc/openapi": "^1.14.0",
+    "@orpc/server": "^1.14.0",
+    "@scalar/hono-api-reference": "^0.10.13",
+    "@subscriptionspend/auth": "workspace:*",
+    "@subscriptionspend/contracts": "workspace:*",
+    "@subscriptionspend/db": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.16",
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.10.0",
+    "zod": "^4.4.2"
+  },
+  "devDependencies": {}
+}

@@ -1,0 +1,15 @@
+{
+  "short_name": "subscriptionspend",
+  "name": "subscriptionspend",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2e241d",
+  "background_color": "#fdf9f4"
+}

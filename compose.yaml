@@ -1,0 +1,83 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-subscriptionspend}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-subscriptionspend}
+      POSTGRES_DB: ${POSTGRES_DB:-subscriptionspend}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-subscriptionspend} -d
+            ${POSTGRES_DB:-subscriptionspend}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: bun run --cwd packages/db migrate
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-subscriptionspend}:${POSTGRES_PASSWORD:-subscriptionspend}@postgres:5432/${POSTGRES_DB:-subscriptionspend}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-subscriptionspend}:${POSTGRES_PASSWORD:-subscriptionspend}@postgres:5432/${POSTGRES_DB:-subscriptionspend}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-dev-only-change-me}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:4000}
+      BETTER_AUTH_COOKIE_DOMAIN: ${BETTER_AUTH_COOKIE_DOMAIN:-}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:4000}
+        VITE_AUTH_URL: ${VITE_AUTH_URL:-http://localhost:4000}
+    ports:
+      - "3000:3000"
+    environment:
+      API_URL: http://api:4000
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:4000}
+      VITE_AUTH_URL: ${VITE_AUTH_URL:-http://localhost:4000}
+      NODE_ENV: production
+    depends_on:
+      - api
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

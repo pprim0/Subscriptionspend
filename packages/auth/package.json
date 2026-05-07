@@ -1,0 +1,16 @@
+{
+  "name": "@subscriptionspend/auth",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts"
+  },
+  "peerDependencies": {
+    "typescript": "^6"
+  },
+  "dependencies": {
+    "@subscriptionspend/db": "workspace:*",
+    "better-auth": "^1.6.9"
+  }
+}
